@@ -70,7 +70,8 @@ router.put(
         { active: true },
         cpaParams
       );
-      res.send(cpaUpdated);
+      const cpa = await CpaModel.findOne({ active: true });
+      res.send(cpa);
     } catch (e) {
       let errors = loopError(e);
       res.status(404).send(errors);
