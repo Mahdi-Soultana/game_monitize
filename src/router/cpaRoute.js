@@ -4,8 +4,17 @@ const CpaModel = require("../model/cpa");
 const router = express.Router();
 
 router.get("/cpa_monitize/", async (req, res) => {
-  const cpa = await CpaModel.findOne({ active: true });
-  res.send(cpa);
+  try {
+    const cpa = await CpaModel.findOne({ active: true });
+    if (!cpa) {
+      throw new Error(
+        "Setting Doesn't Exist Please Ask  Your Devlopper to create Your Setting"
+      );
+    }
+    res.send(cpa);
+  } catch (e) {
+    res.status(404).send(e.message);
+  }
 });
 
 router.get("/", (req, res) => {
@@ -13,7 +22,7 @@ router.get("/", (req, res) => {
 });
 
 function RequireFiled(req, res, next) {
-  const requireFiled = ["link", "isPublic"];
+  const requireFiled = ["link", "isPublic", "byClicking", "timePushAds"];
   const bodyArr = Object.keys(req.body);
   if (!bodyArr.every(item => requireFiled.includes(item))) {
     throw new Error("Field not Match");
@@ -48,7 +57,7 @@ router.post(
     res.status(404).send({ error: err.message });
   }
 );
-///////////LOGIN//////
+///////////Edit//////
 
 router.put(
   "/cpa_monitize/edit",
@@ -71,22 +80,23 @@ router.put(
     res.status(404).send({ error: err.message });
   }
 );
-// router.delete(
-//   "/user/me",
-//   Auth,
-//   async (req, res) => {
-//     ////Account delete
-//     try {
-//       const userDeleted = await User.findOneAndDelete({ _id: req.user._id });
-//       console.log(userDeleted);
-//       res.send("Account deleted");
-//     } catch (e) {
-//       res.status(404).send(e.message);
-//     }
-//   },
-//   (err, req, res, next) => {
-//     res.status(404).send({ error: err.message });
-//   }
-// );
+////Account delete
+router.delete(
+  "/cpa_monitize/:id",
+  async (req, res) => {
+    try {
+      const id = req.params.id;
+      console.log(id);
+      const cpaDeleted = await CpaModel.findOneAndDelete({ _id: id });
+      console.log(cpaDeleted);
+      res.send("cpa setting deleted please create One !");
+    } catch (e) {
+      res.status(404).send(e.message);
+    }
+  },
+  (err, req, res, next) => {
+    res.status(404).send({ error: err.message });
+  }
+);
 
 module.exports = router;

@@ -3,7 +3,9 @@ const mongoose = require("mongoose");
 const cpaSchema = new mongoose.Schema({
   link: String,
   isPublic: Boolean,
-  active: Boolean
+  active: Boolean,
+  byClicking: Boolean,
+  timePushAds: { type: Number, default: 3 }
 });
 
 cpaSchema.methods.GenerateToken = async function () {};
