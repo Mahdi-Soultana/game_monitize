@@ -1,9 +1,11 @@
 const express = require("express");
 require("./db/mongodB");
 const PORT = process.env.PORT;
+const bodyParser= require('body-parser')
 const app = express();
 const cpaRouter = require("./router/cpaRoute");
-
+ 
+app.use(bodyParser.urlencoded({extended: true}))
 app.use(express.json());
 app.use(cpaRouter);
 

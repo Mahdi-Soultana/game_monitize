@@ -2,13 +2,15 @@ const mongoose = require("mongoose");
 
 const cpaSchema = new mongoose.Schema({
   active: Boolean,
-  link: String,
+  link: { type: String },
+
   isPublic: Boolean,
   byClicking: Boolean,
   showPopUp: Boolean,
   timePushAds: { type: Number, default: 3 },
+  countAds: { type: Number, default: 3 },
   timeShowingPopUp: { type: Number, default: 3 },
-  imgAds: { type: Buffer }
+  imgAds: [{ type: Buffer }]
 });
 
 cpaSchema.methods.GenerateToken = async function () {};
