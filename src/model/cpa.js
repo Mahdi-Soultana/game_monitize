@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const cpaSchema = new mongoose.Schema({
+  active: Boolean,
   link: String,
   isPublic: Boolean,
-  active: Boolean,
   byClicking: Boolean,
   showPopUp: Boolean,
   timePushAds: { type: Number, default: 3 },

@@ -23,7 +23,13 @@ router.get("/", (req, res) => {
 });
 
 function RequireFiled(req, res, next) {
-  const requireFiled = ["link", "isPublic", "byClicking", "timePushAds"];
+  const requireFiled = [
+    "link",
+    "isPublic",
+    "byClicking",
+    "timePushAds",
+    "showPopUp"
+  ];
   const bodyArr = Object.keys(req.body);
   if (!bodyArr.every(item => requireFiled.includes(item))) {
     throw new Error("Field not Match");
