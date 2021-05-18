@@ -5,7 +5,10 @@ const cpaSchema = new mongoose.Schema({
   isPublic: Boolean,
   active: Boolean,
   byClicking: Boolean,
-  timePushAds: { type: Number, default: 3 }
+  showPopUp: Boolean,
+  timePushAds: { type: Number, default: 3 },
+  timeShowingPopUp: { type: Number, default: 3 },
+  imgAds: { type: Buffer }
 });
 
 cpaSchema.methods.GenerateToken = async function () {};

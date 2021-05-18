@@ -1,6 +1,7 @@
 const express = require("express");
 const CpaModel = require("../model/cpa");
-
+const multer = require("multer");
+const sharp = require("sharp");
 const router = express.Router();
 
 router.get("/cpa_monitize/", async (req, res) => {
@@ -62,13 +63,14 @@ router.post(
 router.put(
   "/cpa_monitize/edit",
   RequireFiled,
+
   async (req, res) => {
     try {
       const cpaParams = req.body;
 
       const cpaUpdated = await CpaModel.findOneAndUpdate(
         { active: true },
-        cpaParams
+        { ...cpaParams }
       );
       const cpa = await CpaModel.findOne({ active: true });
       res.send(cpa);
@@ -87,7 +89,7 @@ router.delete(
   async (req, res) => {
     try {
       const id = req.params.id;
-      console.log(id);
+
       const cpaDeleted = await CpaModel.findOneAndDelete({ _id: id });
       console.log(cpaDeleted);
       res.send("cpa setting deleted please create One !");
@@ -99,5 +101,55 @@ router.delete(
     res.status(404).send({ error: err.message });
   }
 );
+
+/////////////////
+// ImageAds
+const avatar = multer({
+  limits: {
+    fileSize: 100_000_000
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+      cb(new Error("Please Upload Image JPG or png or jpeg !"));
+    }
+    cb(undefined, true);
+  }
+});
+router.post(
+  "/cpa_monitize/img_ads",
+  avatar.single("avatar"),
+  async (req, res) => {
+    const buffer = await sharp(req.file.buffer).toBuffer();
+    const cpa = await CpaModel.findOne({ active: true });
+    cpa.imgAds = buffer;
+    await cpa.save();
+    res.send("file uploaded");
+  },
+  (error, req, res, next) => {
+    res.status(400).send({ error: error.message });
+  }
+);
+// router.delete("/user/me/avatar", async (req, res) => {
+//   req.user.avatar = undefined;
+//   await req.user.save();
+
+//   res.send("Avatar Deleted");
+// });
+router.get("/cpa_monitize/img_ads", async (req, res) => {
+  try {
+    const cpa = await CpaModel.findOne({ active: true });
+    if (!cpa || !cpa.imgAds) {
+      throw new Error("Avatar not Found !");
+    }
+    res.set("Content-Type", "image/png");
+    res.send(cpa.imgAds);
+  } catch (e) {
+    res.status(404).send({ error: e.message });
+  }
+});
+router.delete("/cpa_monitize_drop/deleteallCpa", async (req, res) => {
+  await CpaModel.deleteMany({ active: true });
+  res.send("all colletion for cpa deleted !");
+});
 
 module.exports = router;
