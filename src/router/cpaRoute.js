@@ -28,7 +28,8 @@ function RequireFiled(req, res, next) {
     "isPublic",
     "byClicking",
     "timePushAds",
-    "showPopUp"
+    "showPopUp",
+    "timeShowingPopUp"
   ];
   const bodyArr = Object.keys(req.body);
   if (!bodyArr.every(item => requireFiled.includes(item))) {
