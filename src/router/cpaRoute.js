@@ -1,6 +1,6 @@
 const express = require("express");
 const CpaModel = require("../model/cpa");
-const imgAdsModel = require("../model/imgAdsModel");
+
 const multer = require("multer");
 const sharp = require("sharp");
 const router = express.Router();
@@ -8,8 +8,8 @@ const router = express.Router();
 router.get("/cpa_monitize/", async (req, res) => {
   try {
     const cpa = await CpaModel.findOne({ active: true });
-    console.log(cpa);
-    cpa.imgAds = cpa.imgAds.map(id => id.toString());
+    // console.log(cpa);
+    // cpa.imgAds = cpa.imgAds.map(id => id.toString());
     if (!cpa) {
       throw new Error(
         "Setting Doesn't Exist Please Ask  Your Devlopper to create Your Setting"
@@ -27,7 +27,7 @@ router.get("/", (req, res) => {
 
 function RequireFiled(req, res, next) {
   const requireFiled = [
-    "links",
+    "link",
     "isPublic",
     "byClicking",
     "timePushAds",
@@ -78,10 +78,7 @@ router.put(
     try {
       const cpaParams = req.body;
 
-      const cpaUpdated = await CpaModel.findOneAndUpdate(
-        { active: true },
-        { ...cpaParams }
-      );
+      await CpaModel.findOneAndUpdate({ active: true }, { ...cpaParams });
       const cpa = await CpaModel.findOne({ active: true });
       res.send(cpa);
     } catch (e) {
@@ -125,13 +122,7 @@ router.delete(
 //     cb(undefined, true);
 //   }
 // });
-var avatar = multer({
-  // destination: function (req, file, cb) {
-  //   cb(null, "uploads/");
-  // },
-  // filename: function (req, file, cb) {
-  //   cb(null, Date.now() + file.originalname);
-  // },
+let avatar = multer({
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(jpg|jpeg|png|gif|svg|webp)$/)) {
       cb(new Error("Please Upload Image JPG or png or jpeg !"));
@@ -143,24 +134,22 @@ var avatar = multer({
 router.post(
   "/cpa_monitize/img_ads",
   // avatar.array("avatar[]", 7),
-  avatar.array("avatar", 4),
+  avatar.single("avatar"),
   async (req, res) => {
     try {
-      const cpa = await CpaModel.findOne({ active: true });
-      cpa.imgAds = [];
-      req.files.forEach(img => {
-        // console.log(img);
-        // console.log(cpa);
-        cpa.imgAds.push(img.buffer);
-      });
+      // req.files.forEach(img => {
+      //   // console.log(img);
+      //   // console.log(cpa);
+      //   cpa.imgAds.push(img.buffer);
+      // });
 
       // console.log(cpa.imgAds);
       // console.log(cpa.imgAds.length);
+      const cpa = await CpaModel.findOne({ active: true });
+      cpa.imgAds = req.file.buffer;
       const cpaUpdated = await cpa.save();
       res.send({
-        sucees: "fileUploaded",
-        length: cpa.imgAds.length,
-        data: cpa
+        sucees: "fileUploaded"
       });
     } catch (e) {
       res.status(401).send({ e });
@@ -176,20 +165,19 @@ router.post(
 
 //   res.send("Avatar Deleted");
 // });
-router.get("/cpa_monitize/img_ads/:count", async (req, res) => {
+router.get("/cpa_monitize/img_ads/", async (req, res) => {
   try {
-    let count = Number(req.params.count) - 1;
     const cpa = await CpaModel.findOne({ active: true });
     if (!cpa || !cpa.imgAds) {
       throw new Error("img not Found !");
     }
 
-    if (count > cpa.imgAds.length - 1 || !cpa.imgAds[count]) {
-      throw new Error("Please verify you count image Number");
-    }
+    // if (count > cpa.imgAds.length - 1 || !cpa.imgAds[count]) {
+    //   throw new Error("Please verify you count image Number");
+    // }
 
     res.set("Content-Type", "image/png");
-    res.send(cpa.imgAds[count]);
+    res.send(cpa.imgAds);
   } catch (e) {
     res.status(404).send({ error: e.message });
   }
