@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const cpaSchema = new mongoose.Schema({
   active: Boolean,
-  link: { type: String },
+  links: [{ type: String }],
 
   isPublic: Boolean,
   byClicking: Boolean,

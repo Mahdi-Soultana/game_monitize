@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
 const cpaImgSchema = new mongoose.Schema({
-  imgAds: [{ type: Buffer }]
+  img: { type: Buffer }
 });
 
-const imgModel = mongoose.models.img || mongoose.model("img", cpaImgSchema);
+const imgModel =
+  mongoose.models.imgAds || mongoose.model("imgAds", cpaImgSchema);
 
 module.exports = imgModel;

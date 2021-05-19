@@ -8,6 +8,8 @@ const router = express.Router();
 router.get("/cpa_monitize/", async (req, res) => {
   try {
     const cpa = await CpaModel.findOne({ active: true });
+    console.log(cpa);
+    cpa.imgAds = cpa.imgAds.map(id => id.toString());
     if (!cpa) {
       throw new Error(
         "Setting Doesn't Exist Please Ask  Your Devlopper to create Your Setting"
@@ -25,7 +27,7 @@ router.get("/", (req, res) => {
 
 function RequireFiled(req, res, next) {
   const requireFiled = [
-    "link",
+    "links",
     "isPublic",
     "byClicking",
     "timePushAds",
@@ -143,18 +145,17 @@ router.post(
   // avatar.array("avatar[]", 7),
   avatar.array("avatar", 4),
   async (req, res) => {
-    // req.files.forEach(async img => {
-    //   const buffer = await sharp(img).toBuffer();
-    //   imgBuffred.push(buffer);
-    // });
     try {
-      // console.log(req.files[0]);
       const cpa = await CpaModel.findOne({ active: true });
       cpa.imgAds = [];
       req.files.forEach(img => {
+        // console.log(img);
+        // console.log(cpa);
         cpa.imgAds.push(img.buffer);
       });
-      console.log(cpa.imgAds.length);
+
+      // console.log(cpa.imgAds);
+      // console.log(cpa.imgAds.length);
       const cpaUpdated = await cpa.save();
       res.send({ sucees: "fileUploaded", length: cpa.imgAds.length });
     } catch (e) {
@@ -176,8 +177,9 @@ router.get("/cpa_monitize/img_ads/:count", async (req, res) => {
     let count = Number(req.params.count) - 1;
     const cpa = await CpaModel.findOne({ active: true });
     if (!cpa || !cpa.imgAds) {
-      throw new Error("Avatar not Found !");
+      throw new Error("img not Found !");
     }
+
     if (count > cpa.imgAds.length - 1 || !cpa.imgAds[count]) {
       throw new Error("Please verify you count image Number");
     }
