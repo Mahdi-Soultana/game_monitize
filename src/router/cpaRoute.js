@@ -157,7 +157,11 @@ router.post(
       // console.log(cpa.imgAds);
       // console.log(cpa.imgAds.length);
       const cpaUpdated = await cpa.save();
-      res.send({ sucees: "fileUploaded", length: cpa.imgAds.length });
+      res.send({
+        sucees: "fileUploaded",
+        length: cpa.imgAds.length,
+        data: cpa
+      });
     } catch (e) {
       res.status(401).send({ e });
     }
